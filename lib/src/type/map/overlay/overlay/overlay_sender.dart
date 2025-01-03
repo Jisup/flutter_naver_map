@@ -14,14 +14,14 @@ mixin _NOverlaySender {
 
     final query = _NOverlayQuery(info, methodName: method).query;
 
-    final messageable = arguments != null
-        ? NMessageable.forOnce(NPayload.convertToMessageable(arguments!))
-        : null;
+    final messageable = arguments != null ? NMessageable.forOnce(NPayload.convertToMessageable(arguments!)) : null;
 
     dynamic lastValue;
 
     for (final overlayController in _overlayControllers) {
-      lastValue = await overlayController.invokeMethod(query, messageable);
+      lastValue = await overlayController.invokeMethod(query, messageable).catchError((e) {
+        print(e);
+      });
     }
 
     return lastValue;
@@ -36,6 +36,5 @@ mixin _NOverlaySender {
     return _send("get$name").then((value) => cast(value));
   }
 
-  Future<T> _runAsync<T>(String method, [dynamic arguments]) async =>
-      await _send(method, arguments);
+  Future<T> _runAsync<T>(String method, [dynamic arguments]) async => await _send(method, arguments);
 }
